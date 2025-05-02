@@ -52,11 +52,20 @@ export default function UserDashboard() {
       const res = await apiRequest("PATCH", `/api/scripts/${scriptId}/${action}`, null);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
+      
+      // Get updated status from the response
+      const status = data.status;
+      const actionMap: Record<string, string> = {
+        'running': 'started',
+        'paused': 'paused',
+        'stopped': 'stopped'
+      };
+      
       toast({
         title: "Success",
-        description: "Script status updated successfully",
+        description: `Script ${actionMap[status] || status} successfully`,
       });
     },
     onError: (error: Error) => {

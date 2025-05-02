@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { UserWithDetails } from "@shared/types";
 import { format } from "date-fns";
@@ -24,19 +25,11 @@ export default function UserDetailsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-4xl overflow-y-auto max-h-[90vh]">
         <DialogHeader>
-          <h3 className="text-lg font-medium text-gray-900">
+          <DialogTitle className="text-lg font-medium text-gray-900">
             User Details: {user.firstName} {user.lastName}
-          </h3>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          </DialogTitle>
         </DialogHeader>
         <div className="py-4">
           <div className="mb-6">

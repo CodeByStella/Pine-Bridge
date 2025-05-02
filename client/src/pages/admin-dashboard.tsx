@@ -39,6 +39,10 @@ export default function AdminDashboard() {
     enabled: !!selectedUser && isUserDetailsModalOpen
   });
 
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(5);
+  
   // Filter users by search term
   const filteredUsers = searchTerm
     ? users.filter(u => 
@@ -47,6 +51,12 @@ export default function AdminDashboard() {
         u.lastName.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : users;
+    
+  // Get current users for pagination
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
 
   // Handle view user details
   const handleViewUserDetails = (user: User) => {
@@ -164,7 +174,7 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ) : (
-                        filteredUsers.map((user) => (
+                        currentUsers.map((user) => (
                           <tr key={user.id}>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.id}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.email}</td>
@@ -173,15 +183,17 @@ export default function AdminDashboard() {
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.country}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{getRoleName(user.role)}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="text-blue-500 hover:text-blue-700"
-                                title="View User Details"
-                                onClick={() => handleViewUserDetails(user)}
-                              >
-                                <Eye className="h-4 w-4" />
-                              </Button>
+                              <div className="flex space-x-2">
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="text-blue-500 hover:text-blue-700"
+                                  title="View User Details"
+                                  onClick={() => handleViewUserDetails(user)}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         ))
