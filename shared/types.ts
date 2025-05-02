@@ -16,7 +16,7 @@ export type UserWithDetails = User & {
 export type ActionType = 'start' | 'pause' | 'stop';
 
 export type DeleteItemType = {
-  type: 'script' | 'account';
+  type: 'script' | 'account' | 'user';
   id: number;
   name: string;
 };

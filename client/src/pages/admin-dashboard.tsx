@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { User } from "@shared/schema";
-import { UserWithDetails } from "@shared/types";
+import { UserWithDetails, DeleteItemType } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
 import { Sidebar } from "@/components/sidebar";
 import UserDetailsModal from "@/components/user-details-modal";
+import ConfirmModal from "@/components/confirm-modal";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Eye, Search } from "lucide-react";
+import { Eye, Search, UserX, Trash2 } from "lucide-react";
 
 export default function AdminDashboard() {
   const { user, logoutMutation } = useAuth();
@@ -18,7 +20,9 @@ export default function AdminDashboard() {
   const [activeSection, setActiveSection] = useState("users");
   const [searchTerm, setSearchTerm] = useState("");
   const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserWithDetails | null>(null);
+  const [deleteItem, setDeleteItem] = useState<DeleteItemType | null>(null);
 
   // Fetch all users
   const { 
@@ -81,6 +85,47 @@ export default function AdminDashboard() {
       refetchUserDetails();
     }
   }, [isUserDetailsModalOpen, selectedUser, refetchUserDetails]);
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      await apiRequest("DELETE", `/api/admin/users/${userId}`, null);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+      setIsConfirmModalOpen(false);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Handle user deletion confirmation
+  const confirmDeleteUser = (user: User) => {
+    setDeleteItem({
+      type: "user",
+      id: user.id,
+      name: `${user.firstName} ${user.lastName} (${user.email})`
+    });
+    setIsConfirmModalOpen(true);
+  };
+
+  // Handle actual deletion
+  const handleDelete = () => {
+    if (!deleteItem) return;
+    
+    if (deleteItem.type === "user") {
+      deleteUserMutation.mutate(deleteItem.id);
+    }
+  };
 
   // Map role ID to readable name
   const getRoleName = (role: string) => {
@@ -193,6 +238,16 @@ export default function AdminDashboard() {
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  className="text-red-500 hover:text-red-700"
+                                  title="Delete User"
+                                  onClick={() => confirmDeleteUser(user)}
+                                  disabled={user.role === "admin"}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
                               </div>
                             </td>
                           </tr>
@@ -203,24 +258,40 @@ export default function AdminDashboard() {
                 </div>
                 <div className="px-6 py-3 flex items-center justify-between border-t border-gray-200">
                   <div className="text-sm text-gray-700">
-                    Showing <span className="font-medium">1</span> to{" "}
-                    <span className="font-medium">{filteredUsers.length}</span> of{" "}
-                    <span className="font-medium">{users.length}</span> users
+                    Showing <span className="font-medium">{indexOfFirstUser + 1}</span> to{" "}
+                    <span className="font-medium">{Math.min(indexOfLastUser, filteredUsers.length)}</span> of{" "}
+                    <span className="font-medium">{filteredUsers.length}</span> users
                   </div>
                   <div className="flex-1 flex justify-end">
                     <Button
                       variant="outline"
                       size="sm"
                       className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
-                      disabled
+                      disabled={currentPage <= 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
                     >
                       Previous
                     </Button>
+                    <div className="mx-2 flex items-center">
+                      {Array.from({ length: totalPages }, (_, i) => (
+                        <Button 
+                          key={i} 
+                          variant={currentPage === i + 1 ? "default" : "outline"}
+                          size="sm"
+                          className="mx-1 w-8 h-8"
+                          onClick={() => setCurrentPage(i + 1)}
+                        >
+                          {i + 1}
+                        </Button>
+                      )).slice(0, 5)}
+                      {totalPages > 5 && <span className="mx-1">...</span>}
+                    </div>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
-                      disabled
+                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white"
+                      disabled={currentPage >= totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
                     >
                       Next
                     </Button>
@@ -295,6 +366,16 @@ export default function AdminDashboard() {
         isOpen={isUserDetailsModalOpen}
         onClose={() => setIsUserDetailsModalOpen(false)}
         user={userDetails || selectedUser}
+      />
+      
+      {/* Confirm Delete Modal */}
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={handleDelete}
+        title="Confirm Deletion"
+        message={deleteItem ? `Are you sure you want to delete ${deleteItem.name}?` : ""}
+        isLoading={deleteUserMutation.isPending}
       />
     </div>
   );
