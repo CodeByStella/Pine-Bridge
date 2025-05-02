@@ -26,6 +26,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(userData: InsertUser): Promise<User>;
+  deleteUser(id: number): Promise<void>;
   getAllUsers(): Promise<User[]>;
   // Script methods
   getScripts(userId: number): Promise<Script[]>;
@@ -72,6 +73,22 @@ export class DatabaseStorage implements IStorage {
   async createUser(userData: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(userData).returning();
     return user;
+  }
+  
+  async deleteUser(id: number): Promise<void> {
+    // First, delete all user's scripts and trading accounts
+    const userScripts = await this.getScripts(id);
+    for (const script of userScripts) {
+      await this.deleteScript(script.id);
+    }
+    
+    const userAccounts = await this.getTradingAccounts(id);
+    for (const account of userAccounts) {
+      await this.deleteTradingAccount(account.id);
+    }
+    
+    // Then delete the user
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getAllUsers(): Promise<User[]> {

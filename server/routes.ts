@@ -176,6 +176,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
+  
+  // Delete user (admin only)
+  app.delete("/api/admin/users/:id", requireAdmin, async (req, res, next) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Don't allow deleting admin users
+      if (user.role === "admin") {
+        return res.status(403).json({ message: "Cannot delete admin users" });
+      }
+      
+      // Delete the user
+      await storage.deleteUser(userId);
+      res.status(204).end();
+    } catch (error) {
+      next(error);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
