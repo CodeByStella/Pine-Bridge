@@ -6,6 +6,7 @@ import { Script, TradingAccount } from "@shared/schema";
 import { DeleteItemType, ScriptWithStatus, ActionType } from "@shared/types";
 import { useToast } from "@/hooks/use-toast";
 import { Sidebar } from "@/components/sidebar";
+import { useLocation } from "wouter";
 
 import ScriptModal from "@/components/script-modal";
 import AccountModal from "@/components/account-modal";
@@ -13,13 +14,13 @@ import ConfirmModal from "@/components/confirm-modal";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Play, Pause, Square, Trash2, Upload, Plus } from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 export default function UserDashboard() {
   const { user, logoutMutation } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [activeSection, setActiveSection] = useState("scripts");
   const [isScriptModalOpen, setIsScriptModalOpen] = useState(false);
   const [isAccountModalOpen, setIsAccountModalOpen] = useState(false);
@@ -174,6 +175,29 @@ export default function UserDashboard() {
     if (!lastRun) return "Never";
     return formatDistanceToNow(new Date(lastRun), { addSuffix: true });
   };
+
+  // Handle logout
+  useEffect(() => {
+    if (logoutMutation.isSuccess) {
+      navigate("/auth");
+    }
+  }, [logoutMutation.isSuccess, navigate]);
+
+  // Show loading state during logout
+  if (logoutMutation.isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+        <div className="w-full max-w-4xl flex rounded-lg shadow-lg overflow-hidden">
+          <div className="w-full bg-white p-8 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+              <p className="mt-4 text-gray-600">Logging out...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // If there are errors, show them
   useEffect(() => {

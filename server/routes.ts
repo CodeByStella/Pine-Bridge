@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { insertScriptSchema, insertTradingAccountSchema } from "@shared/schema";
+import { z } from "zod";
 
 function requireAuth(req: any, res: any, next: any) {
   if (!req.isAuthenticated()) {
@@ -41,6 +42,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(script);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: "Validation failed",
+          errors: error.errors
+        });
+      }
       next(error);
     }
   });

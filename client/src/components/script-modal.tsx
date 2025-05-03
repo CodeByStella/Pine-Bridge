@@ -50,6 +50,10 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
   const uploadScriptMutation = useMutation({
     mutationFn: async (data: ScriptFormValues) => {
       const res = await apiRequest("POST", "/api/scripts", data);
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to upload script");
+      }
       return await res.json();
     },
     onSuccess: () => {
