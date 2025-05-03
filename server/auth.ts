@@ -75,7 +75,6 @@ export function setupAuth(app: Express) {
   app.post("/api/register", async (req, res, next) => {
     try {
       const validatedData = insertUserSchema.parse(req.body);
-      
       // Check if user with this email already exists
       const existingUser = await storage.getUserByEmail(validatedData.email);
       if (existingUser) {
@@ -94,9 +93,9 @@ export function setupAuth(app: Express) {
       // Login the user
       req.login(user, (err) => {
         if (err) return next(err);
-        
+        console.log(user)
         // Don't send the password back to the client
-        const { password, ...userWithoutPassword } = user.toObject();
+        const { password, ...userWithoutPassword } = user
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {

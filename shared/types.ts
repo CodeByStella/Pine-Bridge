@@ -17,7 +17,7 @@ export type ActionType = 'start' | 'pause' | 'stop';
 
 export type DeleteItemType = {
   type: 'script' | 'account' | 'user';
-  id: number;
+  id: string;
   name: string;
 };
 
