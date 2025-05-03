@@ -3,10 +3,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
 import { insertUserSchema, loginSchema } from "@shared/schema";
 import { Document } from "mongoose";
+import { configDotenv } from "dotenv";
 
+configDotenv()
 // Extend the Express User type to include MongoDB document properties
 declare global {
   namespace Express {
@@ -23,7 +24,6 @@ declare global {
     }
   }
 }
-
 export function setupAuth(app: Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "pine-bridge-secret-key-12345",

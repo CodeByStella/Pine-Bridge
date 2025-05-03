@@ -1,11 +1,13 @@
-import { User } from "@shared/schema";
 import { storage } from "../server/storage";
 import mongoose from 'mongoose';
+import { configDotenv } from 'dotenv'
+
+configDotenv();
 
 async function seed() {
     try {
         // Connect to MongoDB
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/userAuthSystem');
+        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/pine-bridge');
         console.log("Connected to MongoDB");
 
         // Check if admin user exists

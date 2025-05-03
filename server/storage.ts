@@ -3,7 +3,9 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import { configDotenv } from "dotenv";
 
+configDotenv()
 const scryptAsync = promisify(scrypt);
 
 export interface IStorage {
@@ -39,7 +41,7 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     this.sessionStore = new MongoStore({
-      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/userAuthSystem',
+      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/pine-bridge',
       collectionName: 'sessions',
       ttl: 7 * 24 * 60 * 60 // 1 week
     });
