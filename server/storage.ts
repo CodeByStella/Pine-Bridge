@@ -55,7 +55,8 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(userData: InsertUser): Promise<User> {
     const user = new User(userData);
-    return await user.save();
+    const savedUser = await user.save();
+    return { ...savedUser.toObject(), _id: savedUser._id.toString() } as User;
   }
   
   async deleteUser(id: string): Promise<void> {
@@ -88,7 +89,8 @@ export class DatabaseStorage implements IStorage {
 
   async createScript(scriptData: InsertScript): Promise<Script> {
     const script = new Script(scriptData);
-    return await script.save();
+    const savedScript = await script.save();
+    return { ...savedScript.toObject(), _id: savedScript._id.toString() } as Script;
   }
 
   async updateScriptStatus(id: string, status: string): Promise<Script | null> {
@@ -113,7 +115,8 @@ export class DatabaseStorage implements IStorage {
 
   async createTradingAccount(accountData: InsertTradingAccount): Promise<TradingAccount> {
     const account = new TradingAccount(accountData);
-    return await account.save();
+    const savedAccount = await account.save();
+    return { ...savedAccount.toObject(), _id: savedAccount._id.toString() } as TradingAccount;
   }
 
   async deleteTradingAccount(id: string): Promise<void> {
