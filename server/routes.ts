@@ -25,7 +25,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User scripts routes
   app.get("/api/scripts", requireAuth, async (req, res, next) => {
     try {
-      const scripts = await storage.getScripts(req.user.id);
+      const scripts = await storage.getScripts(req.user?.id);
       res.json(scripts);
     } catch (error) {
       next(error);
@@ -37,7 +37,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertScriptSchema.parse(req.body);
       const script = await storage.createScript({
         ...validatedData,
-        userId: req.user.id,
+        userId: req.user?.id,
       });
       res.status(201).json(script);
     } catch (error) {
@@ -56,12 +56,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Check if script exists and belongs to user
-      const script = await storage.getScript(scriptId);
+      const script = await storage.getScript(scriptId.toString());
       if (!script) {
         return res.status(404).json({ message: "Script not found" });
       }
       
-      if (script.userId !== req.user.id && req.user.role !== "admin") {
+      if (script.userId !== req.user?.id && req.user?.role !== "admin") {
         return res.status(403).json({ message: "Access denied" });
       }
       
@@ -72,7 +72,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         stop: "stopped",
       };
       
-      const updatedScript = await storage.updateScriptStatus(scriptId, statusMap[action]);
+      const updatedScript = await storage.updateScriptStatus(scriptId.toString(), statusMap[action]);
       res.json(updatedScript);
     } catch (error) {
       next(error);
@@ -84,16 +84,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const scriptId = parseInt(req.params.id);
       
       // Check if script exists and belongs to user
-      const script = await storage.getScript(scriptId);
+      const script = await storage.getScript(scriptId.toString());
       if (!script) {
         return res.status(404).json({ message: "Script not found" });
       }
       
-      if (script.userId !== req.user.id && req.user.role !== "admin") {
+      if (script.userId !== req.user?.id && req.user?.role !== "admin") {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      await storage.deleteScript(scriptId);
+      await storage.deleteScript(scriptId.toString());
       res.status(204).end();
     } catch (error) {
       next(error);
@@ -103,7 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User trading accounts routes
   app.get("/api/trading-accounts", requireAuth, async (req, res, next) => {
     try {
-      const accounts = await storage.getTradingAccounts(req.user.id);
+      const accounts = await storage.getTradingAccounts(req.user?.id);
       res.json(accounts);
     } catch (error) {
       next(error);
@@ -115,7 +115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = insertTradingAccountSchema.parse(req.body);
       const account = await storage.createTradingAccount({
         ...validatedData,
-        userId: req.user.id,
+        userId: req.user?.id,
       });
       res.status(201).json(account);
     } catch (error) {
@@ -128,16 +128,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const accountId = parseInt(req.params.id);
       
       // Check if account exists and belongs to user
-      const account = await storage.getTradingAccount(accountId);
+      const account = await storage.getTradingAccount(accountId.toString());
       if (!account) {
         return res.status(404).json({ message: "Trading account not found" });
       }
       
-      if (account.userId !== req.user.id && req.user.role !== "admin") {
+      if (account.userId !== req.user?.id && req.user?.role !== "admin") {
         return res.status(403).json({ message: "Access denied" });
       }
       
-      await storage.deleteTradingAccount(accountId);
+      await storage.deleteTradingAccount(accountId.toString());
       res.status(204).end();
     } catch (error) {
       next(error);
@@ -157,15 +157,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/users/:id", requireAdmin, async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      const user = await storage.getUser(userId.toString());
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
       
       // Get user's scripts and trading accounts
-      const scripts = await storage.getUserScripts(userId);
-      const tradingAccounts = await storage.getUserTradingAccounts(userId);
+      const scripts = await storage.getUserScripts(userId.toString());
+      const tradingAccounts = await storage.getUserTradingAccounts(userId.toString());
       
       res.json({
         ...user,
@@ -181,7 +181,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res, next) => {
     try {
       const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      const user = await storage.getUser(userId.toString());
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -193,7 +193,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Delete the user
-      await storage.deleteUser(userId);
+      await storage.deleteUser(userId.toString());
       res.status(204).end();
     } catch (error) {
       next(error);

@@ -151,9 +151,9 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
               </Button>
               <Button 
                 type="submit" 
-                isLoading={addAccountMutation.isPending}
+                disabled={addAccountMutation.isPending}
               >
-                Add Account
+                {addAccountMutation.isPending ? "Loading..." : "Add Account"}
               </Button>
             </DialogFooter>
           </form>

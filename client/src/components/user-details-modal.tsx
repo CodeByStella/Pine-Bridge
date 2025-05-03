@@ -70,7 +70,7 @@ export default function UserDetailsModal({
                 <tbody className="bg-white divide-y divide-gray-200">
                   {user.scripts && user.scripts.length > 0 ? (
                     user.scripts.map((script) => (
-                      <tr key={script.id}>
+                      <tr key={script.name}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {script.name}
                         </td>
@@ -110,7 +110,7 @@ export default function UserDetailsModal({
                 <tbody className="bg-white divide-y divide-gray-200">
                   {user.tradingAccounts && user.tradingAccounts.length > 0 ? (
                     user.tradingAccounts.map((account) => (
-                      <tr key={account.id} className={account.status === 'connected' ? 'account-row-connected' : ''}>
+                      <tr key={account.accountNumber} className={account.status === 'connected' ? 'account-row-connected' : ''}>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {account.server}
                         </td>

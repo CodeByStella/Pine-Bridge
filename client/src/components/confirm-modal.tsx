@@ -70,9 +70,9 @@ export default function ConfirmModal({
           <Button
             variant="destructive"
             onClick={onConfirm}
-            isLoading={isLoading}
+            disabled={isLoading}
           >
-            Delete
+            {isLoading ? "Loading..." : "Delete"}
           </Button>
         </DialogFooter>
       </DialogContent>

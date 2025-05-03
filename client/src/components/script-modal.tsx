@@ -126,9 +126,9 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
               </Button>
               <Button 
                 type="submit" 
-                isLoading={uploadScriptMutation.isPending}
+                disabled={uploadScriptMutation.isPending}
               >
-                Upload
+                {uploadScriptMutation.isPending ? "Uploading..." : "Upload"}
               </Button>
             </DialogFooter>
           </form>
