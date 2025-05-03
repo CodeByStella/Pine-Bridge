@@ -3,7 +3,9 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import session from "express-session";
 import MongoStore from "connect-mongo";
+import { configDotenv } from "dotenv";
 
+configDotenv()
 const scryptAsync = promisify(scrypt);
 
 export interface IStorage {
@@ -39,7 +41,7 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     this.sessionStore = new MongoStore({
-      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/userAuthSystem',
+      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/pine-bridge',
       collectionName: 'sessions',
       ttl: 7 * 24 * 60 * 60 // 1 week
     });
@@ -53,24 +55,24 @@ export class DatabaseStorage implements IStorage {
     return await User.findOne({ email });
   }
 
-  async createUser(userData: InsertUser): Promise<User> {
-    const user = new User(userData);
+  async createUser(userData: InsertUser, isAdmin?: boolean): Promise<User> {
+    const user = new User({ ...userData, role: isAdmin ? 'admin' : 'user' });
     const savedUser = await user.save();
     return { ...savedUser.toObject(), _id: savedUser._id.toString() } as User;
   }
-  
+
   async deleteUser(id: string): Promise<void> {
     // First, delete all user's scripts and trading accounts
     const userScripts = await this.getScripts(id);
     for (const script of userScripts) {
       await this.deleteScript(script._id.toString());
     }
-    
+
     const userAccounts = await this.getTradingAccounts(id);
     for (const account of userAccounts) {
       await this.deleteTradingAccount(account._id.toString());
     }
-    
+
     // Then delete the user
     await User.findByIdAndDelete(id);
   }
