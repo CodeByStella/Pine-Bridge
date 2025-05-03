@@ -1,11 +1,12 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
+import { User } from "@shared/schema";
 
 type ProtectedRouteProps = {
   path: string;
-  component: React.ComponentType;
-  allowedRoles?: string[];
+  component: React.ComponentType<any>;
+  allowedRoles?: User["role"][];
 };
 
 export function ProtectedRoute({ path, component: Component, allowedRoles }: ProtectedRouteProps) {

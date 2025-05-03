@@ -1,47 +1,32 @@
-import { db } from "@db";
+import { User, Script, TradingAccount, InsertUser, InsertScript, InsertTradingAccount } from "@shared/schema";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { 
-  users, 
-  scripts, 
-  tradingAccounts, 
-  scriptAccounts,
-  User,
-  InsertUser,
-  Script,
-  InsertScript,
-  TradingAccount,
-  InsertTradingAccount,
-} from "@shared/schema";
-import { eq, and } from "drizzle-orm";
 import session from "express-session";
-import connectPg from "connect-pg-simple";
-import { pool } from "@db";
+import MongoStore from "connect-mongo";
 
 const scryptAsync = promisify(scrypt);
-const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByEmail(email: string): Promise<User | undefined>;
+  getUser(id: string): Promise<User | null>;
+  getUserByEmail(email: string): Promise<User | null>;
   createUser(userData: InsertUser): Promise<User>;
-  deleteUser(id: number): Promise<void>;
+  deleteUser(id: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   // Script methods
-  getScripts(userId: number): Promise<Script[]>;
-  getScript(id: number): Promise<Script | undefined>;
+  getScripts(userId: string): Promise<Script[]>;
+  getScript(id: string): Promise<Script | null>;
   createScript(scriptData: InsertScript): Promise<Script>;
-  updateScriptStatus(id: number, status: string): Promise<Script | undefined>;
-  deleteScript(id: number): Promise<void>;
+  updateScriptStatus(id: string, status: string): Promise<Script | null>;
+  deleteScript(id: string): Promise<void>;
   // Trading account methods
-  getTradingAccounts(userId: number): Promise<TradingAccount[]>;
-  getTradingAccount(id: number): Promise<TradingAccount | undefined>;
+  getTradingAccounts(userId: string): Promise<TradingAccount[]>;
+  getTradingAccount(id: string): Promise<TradingAccount | null>;
   createTradingAccount(accountData: InsertTradingAccount): Promise<TradingAccount>;
-  deleteTradingAccount(id: number): Promise<void>;
+  deleteTradingAccount(id: string): Promise<void>;
   // Admin methods
-  getUserScripts(userId: number): Promise<Script[]>;
-  getUserTradingAccounts(userId: number): Promise<TradingAccount[]>;
+  getUserScripts(userId: string): Promise<Script[]>;
+  getUserTradingAccounts(userId: string): Promise<TradingAccount[]>;
   // Session store
   sessionStore: session.Store;
   // Password methods
@@ -53,103 +38,94 @@ export class DatabaseStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.sessionStore = new PostgresSessionStore({ 
-      pool,
-      createTableIfMissing: true,
-      tableName: 'session' 
+    this.sessionStore = new MongoStore({
+      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/userAuthSystem',
+      collectionName: 'sessions',
+      ttl: 7 * 24 * 60 * 60 // 1 week
     });
   }
 
-  async getUser(id: number): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.id, id));
-    return result[0];
+  async getUser(id: string): Promise<User | null> {
+    return await User.findById(id);
   }
 
-  async getUserByEmail(email: string): Promise<User | undefined> {
-    const result = await db.select().from(users).where(eq(users.email, email));
-    return result[0];
+  async getUserByEmail(email: string): Promise<User | null> {
+    return await User.findOne({ email });
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(userData).returning();
-    return user;
+    const user = new User(userData);
+    return await user.save();
   }
   
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id: string): Promise<void> {
     // First, delete all user's scripts and trading accounts
     const userScripts = await this.getScripts(id);
     for (const script of userScripts) {
-      await this.deleteScript(script.id);
+      await this.deleteScript(script._id.toString());
     }
     
     const userAccounts = await this.getTradingAccounts(id);
     for (const account of userAccounts) {
-      await this.deleteTradingAccount(account.id);
+      await this.deleteTradingAccount(account._id.toString());
     }
     
     // Then delete the user
-    await db.delete(users).where(eq(users.id, id));
+    await User.findByIdAndDelete(id);
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
+    return await User.find();
   }
 
-  async getScripts(userId: number): Promise<Script[]> {
-    return await db.select().from(scripts).where(eq(scripts.userId, userId));
+  async getScripts(userId: string): Promise<Script[]> {
+    return await Script.find({ userId });
   }
 
-  async getScript(id: number): Promise<Script | undefined> {
-    const result = await db.select().from(scripts).where(eq(scripts.id, id));
-    return result[0];
+  async getScript(id: string): Promise<Script | null> {
+    return await Script.findById(id);
   }
 
   async createScript(scriptData: InsertScript): Promise<Script> {
-    const [script] = await db.insert(scripts).values(scriptData).returning();
-    return script;
+    const script = new Script(scriptData);
+    return await script.save();
   }
 
-  async updateScriptStatus(id: number, status: string): Promise<Script | undefined> {
-    const now = new Date();
-    const [updatedScript] = await db
-      .update(scripts)
-      .set({ 
-        status, 
-        lastRun: status === 'running' ? now : undefined 
-      })
-      .where(eq(scripts.id, id))
-      .returning();
-    return updatedScript;
+  async updateScriptStatus(id: string, status: string): Promise<Script | null> {
+    const update: any = { status };
+    if (status === 'running') {
+      update.lastRun = new Date();
+    }
+    return await Script.findByIdAndUpdate(id, update, { new: true });
   }
 
-  async deleteScript(id: number): Promise<void> {
-    await db.delete(scripts).where(eq(scripts.id, id));
+  async deleteScript(id: string): Promise<void> {
+    await Script.findByIdAndDelete(id);
   }
 
-  async getTradingAccounts(userId: number): Promise<TradingAccount[]> {
-    return await db.select().from(tradingAccounts).where(eq(tradingAccounts.userId, userId));
+  async getTradingAccounts(userId: string): Promise<TradingAccount[]> {
+    return await TradingAccount.find({ userId });
   }
 
-  async getTradingAccount(id: number): Promise<TradingAccount | undefined> {
-    const result = await db.select().from(tradingAccounts).where(eq(tradingAccounts.id, id));
-    return result[0];
+  async getTradingAccount(id: string): Promise<TradingAccount | null> {
+    return await TradingAccount.findById(id);
   }
 
   async createTradingAccount(accountData: InsertTradingAccount): Promise<TradingAccount> {
-    const [account] = await db.insert(tradingAccounts).values(accountData).returning();
-    return account;
+    const account = new TradingAccount(accountData);
+    return await account.save();
   }
 
-  async deleteTradingAccount(id: number): Promise<void> {
-    await db.delete(tradingAccounts).where(eq(tradingAccounts.id, id));
+  async deleteTradingAccount(id: string): Promise<void> {
+    await TradingAccount.findByIdAndDelete(id);
   }
 
-  async getUserScripts(userId: number): Promise<Script[]> {
-    return await db.select().from(scripts).where(eq(scripts.userId, userId));
+  async getUserScripts(userId: string): Promise<Script[]> {
+    return await Script.find({ userId });
   }
 
-  async getUserTradingAccounts(userId: number): Promise<TradingAccount[]> {
-    return await db.select().from(tradingAccounts).where(eq(tradingAccounts.userId, userId));
+  async getUserTradingAccounts(userId: string): Promise<TradingAccount[]> {
+    return await TradingAccount.find({ userId });
   }
 
   async hashPassword(password: string): Promise<string> {

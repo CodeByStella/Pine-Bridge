@@ -5,10 +5,22 @@ import session from "express-session";
 import { storage } from "./storage";
 import { User } from "@shared/schema";
 import { insertUserSchema, loginSchema } from "@shared/schema";
+import { Document } from "mongoose";
 
+// Extend the Express User type to include MongoDB document properties
 declare global {
   namespace Express {
-    interface User extends User {}
+    interface User extends Document {
+      _id: string;
+      email: string;
+      password: string;
+      firstName: string;
+      lastName: string;
+      country: string;
+      role: "user" | "admin";
+      createdAt: Date;
+      toObject(): any;
+    }
   }
 }
 
@@ -41,7 +53,7 @@ export function setupAuth(app: Express) {
           if (!user || !(await storage.comparePasswords(password, user.password))) {
             return done(null, false, { message: "Invalid email or password" });
           }
-          return done(null, user);
+          return done(null, user as Express.User);
         } catch (error) {
           return done(error);
         }
@@ -49,11 +61,11 @@ export function setupAuth(app: Express) {
     ),
   );
 
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
+  passport.serializeUser((user: Express.User, done) => done(null, user._id));
+  passport.deserializeUser(async (id: string, done) => {
     try {
       const user = await storage.getUser(id);
-      done(null, user);
+      done(null, user as Express.User);
     } catch (error) {
       done(error);
     }
@@ -77,14 +89,14 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser({
         ...validatedData,
         password: hashedPassword,
-      });
+      }) as Express.User;
 
       // Login the user
       req.login(user, (err) => {
         if (err) return next(err);
         
         // Don't send the password back to the client
-        const { password, ...userWithoutPassword } = user;
+        const { password, ...userWithoutPassword } = user.toObject();
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
@@ -97,7 +109,7 @@ export function setupAuth(app: Express) {
     try {
       const validatedData = loginSchema.parse(req.body);
 
-      passport.authenticate("local", (err, user, info) => {
+      passport.authenticate("local", (err: Error | null, user: Express.User | false, info: { message?: string }) => {
         if (err) return next(err);
         if (!user) {
           return res.status(401).json({ message: info?.message || "Invalid credentials" });
@@ -107,7 +119,7 @@ export function setupAuth(app: Express) {
           if (loginErr) return next(loginErr);
           
           // Don't send the password back to the client
-          const { password, ...userWithoutPassword } = user;
+          const { password, ...userWithoutPassword } = user.toObject();
           return res.json(userWithoutPassword);
         });
       })(req, res, next);
@@ -131,7 +143,7 @@ export function setupAuth(app: Express) {
     }
     
     // Don't send the password back to the client
-    const { password, ...userWithoutPassword } = req.user;
+    const { password, ...userWithoutPassword } = req.user.toObject();
     res.json(userWithoutPassword);
   });
 }
