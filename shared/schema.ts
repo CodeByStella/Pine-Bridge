@@ -49,7 +49,9 @@ export const insertUserSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
   firstName: z.string().min(2, "First name must be at least 2 characters"),
   lastName: z.string().min(2, "Last name must be at least 2 characters"),
-  country: z.string().min(2, "Country must be at least 2 characters")
+  country: z.string().min(2, "Country must be at least 2 characters"),
+  role: z.string().default("user"), // Added role property
+
 });
 
 export const insertScriptSchema = z.object({

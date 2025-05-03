@@ -22,7 +22,8 @@ async function seed() {
                 firstName: "Admin",
                 lastName: "User",
                 country: "US",
-            }, true);
+                role: "admin"
+            });
             console.log("Admin user created(admin@pinebridge.com/admin123)");
         }
 

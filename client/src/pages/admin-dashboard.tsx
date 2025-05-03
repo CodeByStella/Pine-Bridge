@@ -39,7 +39,7 @@ export default function AdminDashboard() {
     data: userDetails,
     refetch: refetchUserDetails
   } = useQuery<UserWithDetails>({
-    queryKey: ["/api/admin/users", selectedUser?.id],
+    queryKey: ["/api/admin/users", selectedUser?._id],
     enabled: !!selectedUser && isUserDetailsModalOpen
   });
 
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
   const confirmDeleteUser = (user: User) => {
     setDeleteItem({
       type: "user",
-      id: user.id,
+      id: user._id,
       name: `${user.firstName} ${user.lastName} (${user.email})`
     });
     setIsConfirmModalOpen(true);
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
     if (!deleteItem) return;
     
     if (deleteItem.type === "user") {
-      deleteUserMutation.mutate(deleteItem.id);
+      deleteUserMutation.mutate(Number(deleteItem.id));
     }
   };
 
@@ -220,8 +220,8 @@ export default function AdminDashboard() {
                         </tr>
                       ) : (
                         currentUsers.map((user) => (
-                          <tr key={user.id}>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.id}</td>
+                          <tr key={user._id}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user._id}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{user.email}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.firstName}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.lastName}</td>

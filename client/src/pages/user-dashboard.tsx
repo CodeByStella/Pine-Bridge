@@ -122,15 +122,15 @@ export default function UserDashboard() {
   });
 
   // Handle script action (start, pause, stop)
-  const handleScriptAction = (scriptId: number, action: ActionType) => {
-    scriptActionMutation.mutate({ scriptId, action });
+  const handleScriptAction = (scriptId: string, action: ActionType) => {
+    scriptActionMutation.mutate({ scriptId: Number(scriptId), action });
   };
 
   // Handle script deletion confirmation
   const confirmDeleteScript = (script: Script) => {
     setDeleteItem({
       type: "script",
-      id: script.id,
+      id: script._id,
       name: script.name
     });
     setIsConfirmModalOpen(true);
@@ -140,7 +140,7 @@ export default function UserDashboard() {
   const confirmDeleteAccount = (account: TradingAccount) => {
     setDeleteItem({
       type: "account",
-      id: account.id,
+      id: account._id,
       name: `${account.server} (${account.accountNumber})`
     });
     setIsConfirmModalOpen(true);
@@ -151,14 +151,14 @@ export default function UserDashboard() {
     if (!deleteItem) return;
     
     if (deleteItem.type === "script") {
-      deleteScriptMutation.mutate(deleteItem.id);
+      deleteScriptMutation.mutate(Number(deleteItem.id));
     } else if (deleteItem.type === "account") {
-      deleteAccountMutation.mutate(deleteItem.id);
+      deleteAccountMutation.mutate(Number(deleteItem.id));
     }
   };
 
   // Get running scripts for an account
-  const getRunningScriptsForAccount = (accountId: number) => {
+  const getRunningScriptsForAccount = (accountId: string) => {
     return scripts
       .filter(script => 
         script.status === "running" && 
@@ -269,7 +269,7 @@ export default function UserDashboard() {
                           </tr>
                         ) : (
                           scripts.map((script) => (
-                            <tr key={script.id}>
+                            <tr key={script._id}>
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {script.name}
                               </td>
@@ -289,7 +289,7 @@ export default function UserDashboard() {
                                     className={`text-yellow-500 hover:text-yellow-700 ${script.status === 'paused' ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     title="Pause"
                                     disabled={script.status === 'paused' || script.status === 'stopped'}
-                                    onClick={() => handleScriptAction(script.id, 'pause')}
+                                    onClick={() => handleScriptAction(script._id, 'pause')}
                                   >
                                     <Pause className="h-4 w-4" />
                                   </Button>
@@ -299,7 +299,7 @@ export default function UserDashboard() {
                                     className="text-green-500 hover:text-green-700"
                                     title="Start"
                                     disabled={script.status === 'running'}
-                                    onClick={() => handleScriptAction(script.id, 'start')}
+                                    onClick={() => handleScriptAction(script._id, 'start')}
                                   >
                                     <Play className="h-4 w-4" />
                                   </Button>
@@ -309,7 +309,7 @@ export default function UserDashboard() {
                                     className={`text-red-500 hover:text-red-700 ${script.status === 'stopped' ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     title="Stop"
                                     disabled={script.status === 'stopped'}
-                                    onClick={() => handleScriptAction(script.id, 'stop')}
+                                    onClick={() => handleScriptAction(script._id, 'stop')}
                                   >
                                     <Square className="h-4 w-4" />
                                   </Button>
@@ -415,7 +415,7 @@ export default function UserDashboard() {
                         ) : (
                           accounts.map((account) => (
                             <tr 
-                              key={account.id} 
+                              key={account._id} 
                               className={account.status === 'connected' ? 'account-row-connected' : ''}
                             >
                               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -430,7 +430,7 @@ export default function UserDashboard() {
                                 </span>
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {getRunningScriptsForAccount(account.id)}
+                                {getRunningScriptsForAccount(account._id)}
                               </td>
                               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <Button

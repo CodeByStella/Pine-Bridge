@@ -5,7 +5,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import { configDotenv } from "dotenv";
 
-configDotenv()
+configDotenv();
 const scryptAsync = promisify(scrypt);
 
 export interface IStorage {
@@ -55,8 +55,8 @@ export class DatabaseStorage implements IStorage {
     return await User.findOne({ email });
   }
 
-  async createUser(userData: InsertUser, isAdmin?: boolean): Promise<User> {
-    const user = new User({ ...userData, role: isAdmin ? 'admin' : 'user' });
+  async createUser(userData: InsertUser): Promise<User> {
+    const user = new User(userData);
     const savedUser = await user.save();
     return { ...savedUser.toObject(), _id: savedUser._id.toString() } as User;
   }
