@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/userAuthSystem';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/pine-bridge';
 
 export async function connectToMongoDB() {
   try {
