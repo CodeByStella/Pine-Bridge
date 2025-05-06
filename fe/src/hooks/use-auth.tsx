@@ -18,7 +18,15 @@ type AuthContextType = {
   registerMutation: UseMutationResult<User, Error, InsertUser>;
 };
 
-export const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
@@ -34,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loginMutation = useMutation({
     mutationFn: async (credentials: z.infer<typeof loginSchema>) => {
       const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      return res;
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
@@ -42,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Login successful",
         description: `Welcome back, ${user.firstName}!`,
       });
+      window.location.href = '/';
     },
     onError: (error: Error) => {
       toast({
@@ -55,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const registerMutation = useMutation({
     mutationFn: async (userData: InsertUser) => {
       const res = await apiRequest("POST", "/api/register", userData);
-      return await res.json();
+      return res;
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
@@ -63,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Registration successful",
         description: `Welcome, ${user.firstName}!`,
       });
+      window.location.href = '/';
     },
     onError: (error: Error) => {
       toast({
@@ -75,10 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/logout");
-      if (!res.ok) {
-        throw new Error("Failed to logout");
-      }
+      await apiRequest("POST", "/api/logout");
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
@@ -112,12 +119,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 }

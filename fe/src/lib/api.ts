@@ -1,25 +1,13 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 
+// console.log("import.meta.env.VITE_API_BASE_URL",import.meta.env.VITE_API_BASE_URL)
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true, // This is important for session cookies
 });
-
-// Add request interceptor for authentication if needed
-api.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error: AxiosError) => {
-    return Promise.reject(error);
-  }
-);
 
 // Add response interceptor for error handling
 api.interceptors.response.use(
@@ -27,8 +15,7 @@ api.interceptors.response.use(
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       // Handle unauthorized access
-      localStorage.removeItem('token');
-      window.location.href = '/login';
+      // window.location.href = '/auth';
     }
     return Promise.reject(error);
   }
