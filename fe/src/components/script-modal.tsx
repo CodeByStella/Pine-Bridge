@@ -51,10 +51,10 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
     mutationFn: async (data: ScriptFormValues) => {
       const res = await apiRequest("POST", "/api/scripts", data);
       if (!res.ok) {
-        const errorData = await res.json();
+        const errorData = await res;
         throw new Error(errorData.message || "Failed to upload script");
       }
-      return await res.json();
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });

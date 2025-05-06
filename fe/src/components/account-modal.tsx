@@ -53,7 +53,7 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
   const addAccountMutation = useMutation({
     mutationFn: async (data: AccountFormValues) => {
       const res = await apiRequest("POST", "/api/trading-accounts", data);
-      return await res.json();
+      return res;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/trading-accounts"] });

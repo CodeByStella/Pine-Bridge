@@ -51,7 +51,7 @@ export default function UserDashboard() {
   const scriptActionMutation = useMutation({
     mutationFn: async ({ scriptId, action }: { scriptId: number; action: ActionType }) => {
       const res = await apiRequest("PATCH", `/api/scripts/${scriptId}/${action}`, null);
-      return await res.json();
+      return res;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });

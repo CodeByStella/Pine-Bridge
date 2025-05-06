@@ -16,6 +16,7 @@ export function ProtectedRoute({ path, component: Component, allowedRoles }: Pro
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
+    console.log(isLoading,user,isRedirecting)
     if (!isLoading && !user && !isRedirecting) {
       setIsRedirecting(true);
       navigate("/auth");
