@@ -1,9 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors"; // Import the cors package
 import { registerRoutes } from "./routes";
-import { serveStatic, log } from "./vite";
+import { serveStatic, log } from "./serve";
 import { connectToMongoDB } from "../db/mongodb";
 
 const app = express();
+
+// Enable CORS for all requests
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  credentials: true,
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
