@@ -1,4 +1,4 @@
-import { storage } from "../server/storage";
+import { storage } from "../src/storage";
 import mongoose from 'mongoose';
 import { configDotenv } from 'dotenv'
 

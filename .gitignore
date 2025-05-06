@@ -1,5 +1,6 @@
 node_modules
 dist
+build
 .env
 .env.local
 .env.development.local
@@ -7,6 +8,12 @@ dist
 .env.production.local
 .DS_Store
 *.log
-server/public
 vite.config.ts.*
 *.tar.gz
+*.zip
+*.tar
+*.tar.xz
+*.tar.bz2
+*.tar.gz.asc
+*.tar.gz.sha256
+*.tar.gz.sha512
