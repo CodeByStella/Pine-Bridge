@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "@/components/auth/login-form";
 import { RegisterForm } from "@/components/auth/register-form";
 
@@ -33,7 +32,7 @@ export default function AuthPage() {
         </div>
 
         {/* Right Side - Hero */}
-        <div className="hidden md:block md:w-1/2 bg-primary p-12 text-white flex flex-col justify-center">
+        <div className="md:block md:w-1/2 bg-primary p-12 text-white flex flex-col justify-center">
           <h2 className="text-3xl font-bold mb-6">Pine-Bridge Trading Platform</h2>
           <p className="mb-6">
             Automate your trading strategies with our powerful script management system. Connect to multiple trading accounts and manage all your trading activities in one place.
