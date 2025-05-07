@@ -32,14 +32,6 @@ export default function ConfirmModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         <div className="py-4">
           <div className="mt-3 text-center sm:text-left">

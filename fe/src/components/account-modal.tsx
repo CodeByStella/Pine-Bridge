@@ -82,14 +82,6 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Add Trading Account</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={onClose}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
