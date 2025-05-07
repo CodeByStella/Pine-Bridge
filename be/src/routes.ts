@@ -42,10 +42,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
       res.status(201).json(script);
     } catch (error) {
+      console.log(error);
       if (error instanceof z.ZodError) {
         return res.status(400).json({
           message: "Validation failed",
-          errors: error.errors
+          errors: error.errors,
         });
       }
       next(error);
@@ -55,31 +56,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/scripts/:id/:action", requireAuth, async (req, res, next) => {
     try {
       const { id, action } = req.params;
-      const scriptId = parseInt(id);
-      
-      // Validate action
+
+      // // Validate action
       if (!["start", "pause", "stop"].includes(action)) {
         return res.status(400).json({ message: "Invalid action" });
       }
-      
+
       // Check if script exists and belongs to user
-      const script = await storage.getScript(scriptId.toString());
+      const script = await storage.getScript(id);
       if (!script) {
         return res.status(404).json({ message: "Script not found" });
       }
-      
-      if (script.userId !== req.user?.id && req.user?.role !== "admin") {
+
+      if (
+        script.userId.toString() !== req.user?.id &&
+        req.user?.role !== "admin"
+      ) {
         return res.status(403).json({ message: "Access denied" });
       }
-      
+
       // Map action to status
       const statusMap: { [key: string]: string } = {
         start: "running",
         pause: "paused",
         stop: "stopped",
       };
-      
-      const updatedScript = await storage.updateScriptStatus(scriptId.toString(), statusMap[action]);
+
+      const updatedScript = await storage.updateScriptStatus(
+        id,
+        statusMap[action]
+      );
       res.json(updatedScript);
     } catch (error) {
       next(error);
@@ -88,19 +94,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/scripts/:id", requireAuth, async (req, res, next) => {
     try {
-      const scriptId = parseInt(req.params.id);
-      
+      const scriptId = req.params.id;
+
       // Check if script exists and belongs to user
-      const script = await storage.getScript(scriptId.toString());
+      const script = await storage.getScript(scriptId);
       if (!script) {
         return res.status(404).json({ message: "Script not found" });
       }
-      
-      if (script.userId !== req.user?.id && req.user?.role !== "admin") {
+
+      if (
+        script.userId.toString() !== req.user?.id &&
+        req.user?.role !== "admin"
+      ) {
         return res.status(403).json({ message: "Access denied" });
       }
-      
-      await storage.deleteScript(scriptId.toString());
+
+      await storage.deleteScript(scriptId);
       res.status(204).end();
     } catch (error) {
       next(error);
@@ -130,26 +139,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete("/api/trading-accounts/:id", requireAuth, async (req, res, next) => {
-    try {
-      const accountId = parseInt(req.params.id);
-      
-      // Check if account exists and belongs to user
-      const account = await storage.getTradingAccount(accountId.toString());
-      if (!account) {
-        return res.status(404).json({ message: "Trading account not found" });
+  app.delete(
+    "/api/trading-accounts/:id",
+    requireAuth,
+    async (req, res, next) => {
+      try {
+        const accountId = parseInt(req.params.id);
+
+        // Check if account exists and belongs to user
+        const account = await storage.getTradingAccount(accountId.toString());
+        if (!account) {
+          return res.status(404).json({ message: "Trading account not found" });
+        }
+
+        if (account.userId !== req.user?.id && req.user?.role !== "admin") {
+          return res.status(403).json({ message: "Access denied" });
+        }
+
+        await storage.deleteTradingAccount(accountId.toString());
+        res.status(204).end();
+      } catch (error) {
+        next(error);
       }
-      
-      if (account.userId !== req.user?.id && req.user?.role !== "admin") {
-        return res.status(403).json({ message: "Access denied" });
-      }
-      
-      await storage.deleteTradingAccount(accountId.toString());
-      res.status(204).end();
-    } catch (error) {
-      next(error);
     }
-  });
+  );
 
   // Admin routes
   app.get("/api/admin/users", requireAdmin, async (req, res, next) => {
@@ -163,19 +176,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/users/:id", requireAdmin, async (req, res, next) => {
     try {
-      const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId.toString());
-      
+      const userId = req.params.id;
+      const user = await storage.getUser(userId);
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Get user's scripts and trading accounts
-      const scripts = await storage.getUserScripts(userId.toString());
-      const tradingAccounts = await storage.getUserTradingAccounts(userId.toString());
-      
+      const scripts = await storage.getUserScripts(userId);
+      const tradingAccounts = await storage.getUserTradingAccounts(userId);
+
       res.json({
-        ...user,
+        ...(user as any)._doc,
         scripts,
         tradingAccounts,
       });
@@ -183,24 +196,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       next(error);
     }
   });
-  
+
   // Delete user (admin only)
   app.delete("/api/admin/users/:id", requireAdmin, async (req, res, next) => {
     try {
-      const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId.toString());
-      
+      const userId = req.params.id;
+      const user = await storage.getUser(userId);
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       // Don't allow deleting admin users
       if (user.role === "admin") {
         return res.status(403).json({ message: "Cannot delete admin users" });
       }
-      
+
       // Delete the user
-      await storage.deleteUser(userId.toString());
+      await storage.deleteUser(userId);
       res.status(204).end();
     } catch (error) {
       next(error);

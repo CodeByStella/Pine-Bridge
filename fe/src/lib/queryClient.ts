@@ -3,17 +3,10 @@ import api from "./api";
 
 type UnauthorizedBehavior = "returnNull" | "throw";
 
-async function throwIfResNotOk(res: Response) {
-  if (!res.ok) {
-    const text = (await res.text()) || res.statusText;
-    throw new Error(`${res.status}: ${text}`);
-  }
-}
-
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined,
+  data?: unknown | undefined
 ): Promise<any> {
   try {
     const response = await api({
@@ -33,10 +26,13 @@ export const getQueryFn: <T>(options: {
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
     try {
-      const response = await api.get(queryKey[0] as string);
+      const response = await api.get(queryKey.join("/") as string);
       return response.data;
     } catch (error: any) {
-      if (unauthorizedBehavior === "returnNull" && error.response?.status === 401) {
+      if (
+        unauthorizedBehavior === "returnNull" &&
+        error.response?.status === 401
+      ) {
         return null;
       }
       throw error;

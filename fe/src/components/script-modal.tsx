@@ -49,12 +49,16 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
 
   const uploadScriptMutation = useMutation({
     mutationFn: async (data: ScriptFormValues) => {
-      const res = await apiRequest("POST", "/api/scripts", data);
-      if (!res.ok) {
-        const errorData = await res;
-        throw new Error(errorData.message || "Failed to upload script");
+      try {
+        const res = await apiRequest("POST", "/api/scripts", data);
+        return res;
+
+      } catch (error) {
+
+        console.error(error);
+        throw new Error("An error occurred while uploading the script.");
       }
-      return res;
+
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
@@ -120,8 +124,8 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
               <Button variant="outline" type="button" onClick={onClose}>
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={uploadScriptMutation.isPending}
               >
                 {uploadScriptMutation.isPending ? "Uploading..." : "Upload"}
