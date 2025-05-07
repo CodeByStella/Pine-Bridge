@@ -51,7 +51,7 @@ export function Sidebar({ activeItem, onItemClick, items, title }: SidebarProps)
       </div>
       
       <nav className={cn(
-        "md:block p-4 overflow-y-auto h-full",
+        "md:block p-4 overflow-y-auto",
         isOpen ? "block" : "hidden"
       )}>
         <ul className="space-y-2">

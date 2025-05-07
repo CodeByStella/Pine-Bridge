@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
+import countryList from 'react-select-country-list';
 
 import {
   Form,
@@ -15,19 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect } from "react";
 
-const countries = [
-  { value: "US", label: "United States" },
-  { value: "CA", label: "Canada" },
-  { value: "UK", label: "United Kingdom" },
-  { value: "AU", label: "Australia" },
-  { value: "DE", label: "Germany" },
-  { value: "FR", label: "France" },
-  { value: "ES", label: "Spain" },
-  { value: "IT", label: "Italy" },
-  { value: "JP", label: "Japan" },
-  { value: "CN", label: "China" },
-];
+const countries = countryList().getData()
 
 interface RegisterFormProps {
   onToggleForm: () => void;
