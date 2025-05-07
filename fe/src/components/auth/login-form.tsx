@@ -63,9 +63,9 @@ export function LoginForm({ onToggleForm }: LoginFormProps) {
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           disabled={loginMutation.isPending}
         >
           {loginMutation.isPending ? "Loading..." : "Login"}
@@ -85,4 +85,4 @@ export function LoginForm({ onToggleForm }: LoginFormProps) {
       </form>
     </Form>
   );
-} 
+}

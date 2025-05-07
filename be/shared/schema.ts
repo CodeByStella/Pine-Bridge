@@ -58,11 +58,11 @@ export const User = mongoose.model("User", userSchema);
 export const Script = mongoose.model("Script", scriptSchema);
 export const TradingAccount = mongoose.model(
   "TradingAccount",
-  tradingAccountSchema
+  tradingAccountSchema,
 );
 export const ScriptAccount = mongoose.model(
   "ScriptAccount",
-  scriptAccountSchema
+  scriptAccountSchema,
 );
 
 // Zod schemas for validation

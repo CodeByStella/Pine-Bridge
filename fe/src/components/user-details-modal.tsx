@@ -1,4 +1,3 @@
-import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -33,7 +32,9 @@ export default function UserDetailsModal({
         </DialogHeader>
         <div className="py-4">
           <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-2">User Information</h4>
+            <h4 className="text-base font-medium text-gray-700 mb-2">
+              User Information
+            </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-500">Email</p>
@@ -46,7 +47,9 @@ export default function UserDetailsModal({
               <div>
                 <p className="text-sm text-gray-500">Registered On</p>
                 <p className="text-gray-800">
-                  {user.createdAt ? format(new Date(user.createdAt), 'PPP') : 'Unknown'}
+                  {user.createdAt
+                    ? format(new Date(user.createdAt), "PPP")
+                    : "Unknown"}
                 </p>
               </div>
               <div>
@@ -55,16 +58,24 @@ export default function UserDetailsModal({
               </div>
             </div>
           </div>
-          
+
           <div className="mb-6">
-            <h4 className="text-base font-medium text-gray-700 mb-2">Scripts</h4>
+            <h4 className="text-base font-medium text-gray-700 mb-2">
+              Scripts
+            </h4>
             <div className="border rounded-md overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Script Name</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Run</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Script Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Run
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -75,18 +86,26 @@ export default function UserDetailsModal({
                           {script.name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-${script.status.toLowerCase()}`}>
-                            {script.status.charAt(0).toUpperCase() + script.status.slice(1)}
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-${script.status.toLowerCase()}`}
+                          >
+                            {script.status.charAt(0).toUpperCase() +
+                              script.status.slice(1)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {script.lastRun ? format(new Date(script.lastRun), 'Pp') : 'Never'}
+                          {script.lastRun
+                            ? format(new Date(script.lastRun), "Pp")
+                            : "Never"}
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td
+                        colSpan={3}
+                        className="px-6 py-4 text-center text-sm text-gray-500"
+                      >
                         No scripts found.
                       </td>
                     </tr>
@@ -95,22 +114,37 @@ export default function UserDetailsModal({
               </table>
             </div>
           </div>
-          
+
           <div>
-            <h4 className="text-base font-medium text-gray-700 mb-2">Trading Accounts</h4>
+            <h4 className="text-base font-medium text-gray-700 mb-2">
+              Trading Accounts
+            </h4>
             <div className="border rounded-md overflow-hidden">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Broker</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Account Number</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Broker
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Account Number
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {user.tradingAccounts && user.tradingAccounts.length > 0 ? (
                     user.tradingAccounts.map((account) => (
-                      <tr key={account.accountNumber} className={account.status === 'connected' ? 'account-row-connected' : ''}>
+                      <tr
+                        key={account.accountNumber}
+                        className={
+                          account.status === "connected"
+                            ? "account-row-connected"
+                            : ""
+                        }
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                           {account.server}
                         </td>
@@ -118,15 +152,21 @@ export default function UserDetailsModal({
                           {account.accountNumber}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-${account.status.toLowerCase()}`}>
-                            {account.status.charAt(0).toUpperCase() + account.status.slice(1)}
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-${account.status.toLowerCase()}`}
+                          >
+                            {account.status.charAt(0).toUpperCase() +
+                              account.status.slice(1)}
                           </span>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={3} className="px-6 py-4 text-center text-sm text-gray-500">
+                      <td
+                        colSpan={3}
+                        className="px-6 py-4 text-center text-sm text-gray-500"
+                      >
                         No trading accounts found.
                       </td>
                     </tr>

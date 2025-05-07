@@ -1,10 +1,10 @@
-import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 // console.log("import.meta.env.VITE_API_BASE_URL",import.meta.env.VITE_API_BASE_URL)
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true, // This is important for session cookies
 });
@@ -18,7 +18,7 @@ api.interceptors.response.use(
       // window.location.href = '/auth';
     }
     return Promise.reject(error);
-  }
+  },
 );
 
-export default api; 
+export default api;

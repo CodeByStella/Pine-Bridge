@@ -7,7 +7,7 @@ import { insertUserSchema, loginSchema } from "@shared/schema";
 import { Document } from "mongoose";
 import { configDotenv } from "dotenv";
 
-configDotenv()
+configDotenv();
 // Extend the Express User type to include MongoDB document properties
 declare global {
   namespace Express {
@@ -33,7 +33,7 @@ export function setupAuth(app: Express) {
     cookie: {
       secure: process.env.NODE_ENV === "production",
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-    }
+    },
   };
 
   app.set("trust proxy", 1);
@@ -50,7 +50,10 @@ export function setupAuth(app: Express) {
       async (email, password, done) => {
         try {
           const user = await storage.getUserByEmail(email);
-          if (!user || !(await storage.comparePasswords(password, user.password))) {
+          if (
+            !user ||
+            !(await storage.comparePasswords(password, user.password))
+          ) {
             return done(null, false, { message: "Invalid email or password" });
           }
           return done(null, user as Express.User);
@@ -83,19 +86,18 @@ export function setupAuth(app: Express) {
 
       // Hash the password
       const hashedPassword = await storage.hashPassword(validatedData.password);
-      
+
       // Create the user
-      const user = await storage.createUser({
+      const user = (await storage.createUser({
         ...validatedData,
         password: hashedPassword,
-      }) as Express.User;
+      })) as Express.User;
 
       // Login the user
       req.login(user, (err) => {
         if (err) return next(err);
-        console.log(user)
         // Don't send the password back to the client
-        const { password, ...userWithoutPassword } = user
+        const userWithoutPassword = { ...user, password: undefined };
         res.status(201).json(userWithoutPassword);
       });
     } catch (error) {
@@ -106,22 +108,34 @@ export function setupAuth(app: Express) {
   // User login endpoint
   app.post("/api/login", (req, res, next) => {
     try {
-      const validatedData = loginSchema.parse(req.body);
+      loginSchema.parse(req.body);
 
-      passport.authenticate("local", (err: Error | null, user: Express.User | false, info: { message?: string }) => {
-        if (err) return next(err);
-        if (!user) {
-          return res.status(401).json({ message: info?.message || "Invalid credentials" });
-        }
-        
-        req.login(user, (loginErr) => {
-          if (loginErr) return next(loginErr);
-          
-          // Don't send the password back to the client
-          const { password, ...userWithoutPassword } = user.toObject();
-          return res.json(userWithoutPassword);
-        });
-      })(req, res, next);
+      passport.authenticate(
+        "local",
+        (
+          err: Error | null,
+          user: Express.User | false,
+          info: { message?: string },
+        ) => {
+          if (err) return next(err);
+          if (!user) {
+            return res
+              .status(401)
+              .json({ message: info?.message || "Invalid credentials" });
+          }
+
+          req.login(user, (loginErr) => {
+            if (loginErr) return next(loginErr);
+
+            // Don't send the password back to the client
+            const userWithoutPassword = {
+              ...user.toObject(),
+              password: undefined,
+            };
+            res.status(201).json(userWithoutPassword);
+          });
+        },
+      )(req, res, next);
     } catch (error) {
       next(error);
     }
@@ -140,9 +154,9 @@ export function setupAuth(app: Express) {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Not authenticated" });
     }
-    
+
     // Don't send the password back to the client
-    const { password, ...userWithoutPassword } = req.user.toObject();
-    res.json(userWithoutPassword);
+    const userWithoutPassword = { ...req.user.toObject(), password: undefined };
+    res.status(200).json(userWithoutPassword);
   });
 }

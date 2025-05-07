@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
 
 import {
   Form,
@@ -28,7 +27,9 @@ const accountFormSchema = z.object({
   server: z.string().min(3, "Server must be at least 3 characters."),
   username: z.string().min(3, "Username must be at least 3 characters."),
   password: z.string().min(6, "Password must be at least 6 characters."),
-  accountNumber: z.string().min(3, "Account number must be at least 3 characters."),
+  accountNumber: z
+    .string()
+    .min(3, "Account number must be at least 3 characters."),
 });
 
 type AccountFormValues = z.infer<typeof accountFormSchema>;
@@ -92,7 +93,10 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
                 <FormItem>
                   <FormLabel>Server</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., mt4server.broker.com" {...field} />
+                    <Input
+                      placeholder="e.g., mt4server.broker.com"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -141,10 +145,7 @@ export default function AccountModal({ isOpen, onClose }: AccountModalProps) {
               <Button variant="outline" type="button" onClick={onClose}>
                 Cancel
               </Button>
-              <Button 
-                type="submit" 
-                disabled={addAccountMutation.isPending}
-              >
+              <Button type="submit" disabled={addAccountMutation.isPending}>
                 {addAccountMutation.isPending ? "Loading..." : "Add Account"}
               </Button>
             </DialogFooter>

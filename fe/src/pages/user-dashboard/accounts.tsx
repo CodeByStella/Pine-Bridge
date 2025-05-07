@@ -42,21 +42,21 @@ const Accounts = () => {
 
   const {
     data: scripts = [],
-    isLoading: isLoadingScripts,
+    // isLoading: isLoadingScripts,
     error: scriptsError,
   } = useQuery<Script[]>({
     queryKey: ["/api/scripts"],
     enabled: !!user,
   });
 
-  const getRunningScriptsForAccount = (accountId: string) => {
+  const getRunningScriptsForAccount = () => {
     return (
       scripts
         .filter(
           (script) =>
             script.status === "running" &&
             // This is a simplified approach - in a real app, you'd have a proper relation check
-            Math.random() > 0.5 // Just for demo purposes
+            Math.random() > 0.5, // Just for demo purposes
         )
         .map((script) => script.name)
         .join(", ") || "None"
@@ -191,7 +191,7 @@ const Accounts = () => {
                           </span>
                         </td>
                         <td className="px-8 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                          {getRunningScriptsForAccount(account._id)}
+                          {getRunningScriptsForAccount()}
                         </td>
                         <td className="px-8 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                           <Button

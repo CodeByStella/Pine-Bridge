@@ -31,7 +31,7 @@ const Scripts = () => {
       const res = await apiRequest(
         "PATCH",
         `/api/scripts/${scriptId}/${action}`,
-        {}
+        {},
       );
       return res;
     },

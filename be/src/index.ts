@@ -1,4 +1,4 @@
-import express, { type Request, Response, NextFunction } from "express";
+import express, { type Request, Response } from "express";
 import cors from "cors"; // Import the cors package
 import { registerRoutes } from "./routes";
 import { serveStatic, log } from "./serve";
@@ -7,10 +7,12 @@ import { connectToMongoDB } from "../db/mongodb";
 const app = express();
 
 // Enable CORS for all requests
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -48,10 +50,10 @@ app.use((req, res, next) => {
 (async () => {
   // Connect to MongoDB
   await connectToMongoDB();
-  
+
   const server = await registerRoutes(app);
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  app.use((err: any, _req: Request, res: Response) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
@@ -63,17 +65,20 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
 
-    serveStatic(app);
+  serveStatic(app);
 
   // ALWAYS serve the app on port 5000
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = 5000;
-  server.listen({
-    port,
-    host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
-    log(`serving on port ${port}`);
-  });
+  server.listen(
+    {
+      port,
+      host: "0.0.0.0",
+      reusePort: true,
+    },
+    () => {
+      log(`serving on port ${port}`);
+    },
+  );
 })();
