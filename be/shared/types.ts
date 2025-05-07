@@ -1,4 +1,4 @@
-import { User, Script, TradingAccount } from './schema';
+import { User, Script, TradingAccount } from "./schema";
 
 export type ScriptWithStatus = Script & {
   isActive?: boolean;
@@ -13,10 +13,10 @@ export type UserWithDetails = User & {
   tradingAccounts?: TradingAccount[];
 };
 
-export type ActionType = 'start' | 'pause' | 'stop';
+export type ActionType = "start" | "pause" | "stop";
 
 export type DeleteItemType = {
-  type: 'script' | 'account' | 'user';
+  type: "script" | "account" | "user";
   id: string;
   name: string;
 };

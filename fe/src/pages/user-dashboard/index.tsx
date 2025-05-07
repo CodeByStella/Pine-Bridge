@@ -44,7 +44,7 @@ export default function UserDashboard() {
         items={[
           { id: "scripts", icon: "code", label: "My Scripts" },
           { id: "actions", icon: "bolt", label: "Actions" },
-          { id: "accounts", icon: "user-circle", label: "My Trading Accounts" }
+          { id: "accounts", icon: "user-circle", label: "My Trading Accounts" },
         ]}
         title="Pine-Bridge"
       />

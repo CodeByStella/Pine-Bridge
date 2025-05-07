@@ -6,7 +6,7 @@ type UnauthorizedBehavior = "returnNull" | "throw";
 export async function apiRequest(
   method: string,
   url: string,
-  data?: unknown | undefined
+  data?: unknown | undefined,
 ): Promise<any> {
   try {
     const response = await api({
@@ -16,7 +16,9 @@ export async function apiRequest(
     });
     return response.data;
   } catch (error) {
-    throw error;
+    if ((error as any)?.response?.data) {
+      throw new Error((error as any)?.response?.data?.message);
+    } else throw error;
   }
 }
 
@@ -28,10 +30,10 @@ export const getQueryFn: <T>(options: {
     try {
       const response = await api.get(queryKey.join("/") as string);
       return response.data;
-    } catch (error: any) {
+    } catch (error) {
       if (
         unauthorizedBehavior === "returnNull" &&
-        error.response?.status === 401
+        (error as any).response?.status === 401
       ) {
         return null;
       }

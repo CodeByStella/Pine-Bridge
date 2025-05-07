@@ -22,7 +22,7 @@ const Users = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(5);
   const [selectedUser, setSelectedUser] = useState<UserWithDetails | null>(
-    null
+    null,
   );
   const [isUserDetailsModalOpen, setIsUserDetailsModalOpen] = useState(false);
   const [deleteItem, setDeleteItem] = useState<DeleteItemType | null>(null);
@@ -82,7 +82,7 @@ const Users = () => {
   const {
     data: users = [],
     isLoading: isLoadingUsers,
-    error: usersError,
+    // error: usersError,
   } = useQuery<User[]>({
     queryKey: ["/api/admin/users"],
     enabled: !!user && user.role === "admin",
@@ -100,7 +100,7 @@ const Users = () => {
         (u) =>
           u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
           u.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          u.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+          u.lastName.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     : users;
 

@@ -14,7 +14,7 @@ export function log(message: string, source = "express") {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(process.cwd(),  "public");
+  const distPath = path.resolve(process.cwd(), "public");
 
   if (!fs.existsSync(distPath)) {
     throw new Error(

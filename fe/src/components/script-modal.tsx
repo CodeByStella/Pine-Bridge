@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { X } from "lucide-react";
 
 import {
   Form,
@@ -52,13 +51,10 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
       try {
         const res = await apiRequest("POST", "/api/scripts", data);
         return res;
-
       } catch (error) {
-
         console.error(error);
         throw new Error("An error occurred while uploading the script.");
       }
-
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/scripts"] });
@@ -124,10 +120,7 @@ export default function ScriptModal({ isOpen, onClose }: ScriptModalProps) {
               <Button variant="outline" type="button" onClick={onClose}>
                 Cancel
               </Button>
-              <Button
-                type="submit"
-                disabled={uploadScriptMutation.isPending}
-              >
+              <Button type="submit" disabled={uploadScriptMutation.isPending}>
                 {uploadScriptMutation.isPending ? "Uploading..." : "Upload"}
               </Button>
             </DialogFooter>

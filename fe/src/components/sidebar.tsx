@@ -14,7 +14,12 @@ interface SidebarProps {
   title: string;
 }
 
-export function Sidebar({ activeItem, onItemClick, items, title }: SidebarProps) {
+export function Sidebar({
+  activeItem,
+  onItemClick,
+  items,
+  title,
+}: SidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -23,15 +28,15 @@ export function Sidebar({ activeItem, onItemClick, items, title }: SidebarProps)
 
   const getIconElement = (icon: string) => {
     switch (icon) {
-      case 'code':
+      case "code":
         return <i className="fas fa-code mr-3"></i>;
-      case 'bolt':
+      case "bolt":
         return <i className="fas fa-bolt mr-3"></i>;
-      case 'user-circle':
+      case "user-circle":
         return <i className="fas fa-user-circle mr-3"></i>;
-      case 'users':
+      case "users":
         return <i className="fas fa-users mr-3"></i>;
-      case 'cogs':
+      case "cogs":
         return <i className="fas fa-cogs mr-3"></i>;
       default:
         return <i className="fas fa-circle mr-3"></i>;
@@ -46,14 +51,16 @@ export function Sidebar({ activeItem, onItemClick, items, title }: SidebarProps)
           className="md:hidden text-white focus:outline-none"
           onClick={toggleSidebar}
         >
-          <i className={`fas fa-${isOpen ? 'times' : 'bars'}`}></i>
+          <i className={`fas fa-${isOpen ? "times" : "bars"}`}></i>
         </button>
       </div>
-      
-      <nav className={cn(
-        "md:block p-4 overflow-y-auto",
-        isOpen ? "block" : "hidden"
-      )}>
+
+      <nav
+        className={cn(
+          "md:block p-4 overflow-y-auto",
+          isOpen ? "block" : "hidden",
+        )}
+      >
         <ul className="space-y-2">
           {items.map((item) => (
             <li key={item.id}>
@@ -61,7 +68,7 @@ export function Sidebar({ activeItem, onItemClick, items, title }: SidebarProps)
                 href={`#${item.id}`}
                 className={cn(
                   "flex items-center p-2 text-white rounded-md hover:bg-gray-700",
-                  activeItem === item.id && "nav-link active"
+                  activeItem === item.id && "nav-link active",
                 )}
                 onClick={(e) => {
                   e.preventDefault();

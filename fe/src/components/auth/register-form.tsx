@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
-import countryList from 'react-select-country-list';
+import countryList from "react-select-country-list";
 
 import {
   Form,
@@ -15,10 +15,15 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const countries = countryList().getData()
+const countries = countryList().getData();
 
 interface RegisterFormProps {
   onToggleForm: () => void;
@@ -124,9 +129,9 @@ export function RegisterForm({ onToggleForm }: RegisterFormProps) {
             </FormItem>
           )}
         />
-        <Button 
-          type="submit" 
-          className="w-full" 
+        <Button
+          type="submit"
+          className="w-full"
           disabled={registerMutation.isPending}
         >
           {registerMutation.isPending ? "Loading..." : "Register"}
@@ -146,4 +151,4 @@ export function RegisterForm({ onToggleForm }: RegisterFormProps) {
       </form>
     </Form>
   );
-} 
+}

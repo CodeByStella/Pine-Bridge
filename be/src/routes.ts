@@ -84,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const updatedScript = await storage.updateScriptStatus(
         id,
-        statusMap[action]
+        statusMap[action],
       );
       res.json(updatedScript);
     } catch (error) {
@@ -161,7 +161,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } catch (error) {
         next(error);
       }
-    }
+    },
   );
 
   // Admin routes

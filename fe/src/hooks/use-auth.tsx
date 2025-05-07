@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Login successful",
         description: `Welcome back, ${user.firstName}!`,
       });
-      window.location.href = '/';
+      window.location.href = "/";
     },
     onError: (error: Error) => {
       toast({
@@ -72,7 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Registration successful",
         description: `Welcome, ${user.firstName}!`,
       });
-      window.location.href = '/';
+      window.location.href = "/";
     },
     onError: (error: Error) => {
       toast({

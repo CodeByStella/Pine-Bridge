@@ -1,4 +1,11 @@
-import { User, Script, TradingAccount, InsertUser, InsertScript, InsertTradingAccount } from "@shared/schema";
+import {
+  User,
+  Script,
+  TradingAccount,
+  InsertUser,
+  InsertScript,
+  InsertTradingAccount,
+} from "@shared/schema";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import session from "express-session";
@@ -24,7 +31,9 @@ export interface IStorage {
   // Trading account methods
   getTradingAccounts(userId: string): Promise<TradingAccount[]>;
   getTradingAccount(id: string): Promise<TradingAccount | null>;
-  createTradingAccount(accountData: InsertTradingAccount): Promise<TradingAccount>;
+  createTradingAccount(
+    accountData: InsertTradingAccount,
+  ): Promise<TradingAccount>;
   deleteTradingAccount(id: string): Promise<void>;
   // Admin methods
   getUserScripts(userId: string): Promise<Script[]>;
@@ -41,9 +50,10 @@ export class DatabaseStorage implements IStorage {
 
   constructor() {
     this.sessionStore = new MongoStore({
-      mongoUrl: process.env.MONGODB_URI || 'mongodb://localhost:27017/pine-bridge',
-      collectionName: 'sessions',
-      ttl: 7 * 24 * 60 * 60 // 1 week
+      mongoUrl:
+        process.env.MONGODB_URI || "mongodb://localhost:27017/pine-bridge",
+      collectionName: "sessions",
+      ttl: 7 * 24 * 60 * 60, // 1 week
     });
   }
 
@@ -92,12 +102,15 @@ export class DatabaseStorage implements IStorage {
   async createScript(scriptData: InsertScript): Promise<Script> {
     const script = new Script(scriptData);
     const savedScript = await script.save();
-    return { ...savedScript.toObject(), _id: savedScript._id.toString() } as Script;
+    return {
+      ...savedScript.toObject(),
+      _id: savedScript._id.toString(),
+    } as Script;
   }
 
   async updateScriptStatus(id: string, status: string): Promise<Script | null> {
     const update: any = { status };
-    if (status === 'running') {
+    if (status === "running") {
       update.lastRun = new Date();
     }
     return await Script.findByIdAndUpdate(id, update, { new: true });
@@ -115,10 +128,15 @@ export class DatabaseStorage implements IStorage {
     return await TradingAccount.findById(id);
   }
 
-  async createTradingAccount(accountData: InsertTradingAccount): Promise<TradingAccount> {
+  async createTradingAccount(
+    accountData: InsertTradingAccount,
+  ): Promise<TradingAccount> {
     const account = new TradingAccount(accountData);
     const savedAccount = await account.save();
-    return { ...savedAccount.toObject(), _id: savedAccount._id.toString() } as TradingAccount;
+    return {
+      ...savedAccount.toObject(),
+      _id: savedAccount._id.toString(),
+    } as TradingAccount;
   }
 
   async deleteTradingAccount(id: string): Promise<void> {

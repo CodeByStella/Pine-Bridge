@@ -13,15 +13,15 @@ function Router() {
   return (
     <Switch>
       <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute 
-        path="/" 
-        component={user?.role === "admin" ? AdminDashboard : UserDashboard} 
-        allowedRoles={["user", "admin"]} 
+      <ProtectedRoute
+        path="/"
+        component={user?.role === "admin" ? AdminDashboard : UserDashboard}
+        allowedRoles={["user", "admin"]}
       />
-      <ProtectedRoute 
-        path="/admin" 
-        component={AdminDashboard} 
-        allowedRoles={["admin"]} 
+      <ProtectedRoute
+        path="/admin"
+        component={AdminDashboard}
+        allowedRoles={["admin"]}
       />
       <Route component={NotFound} />
     </Switch>
