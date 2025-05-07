@@ -17,3 +17,4 @@ vite.config.ts.*
 *.tar.gz.asc
 *.tar.gz.sha256
 *.tar.gz.sha512
+.gitignore
