@@ -64,8 +64,8 @@ const Accounts = () => {
   };
 
   const deleteAccountMutation = useMutation({
-    mutationFn: async (accountId: number) => {
-      await apiRequest("DELETE", `/api/trading-accounts/${accountId}`, null);
+    mutationFn: async (accountId: string) => {
+      await apiRequest("DELETE", `/api/trading-accounts/${accountId}`, {});
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/trading-accounts"] });
@@ -88,7 +88,7 @@ const Accounts = () => {
     if (!deleteItem) return;
 
     if (deleteItem.type === "account") {
-      deleteAccountMutation.mutate(Number(deleteItem.id));
+      deleteAccountMutation.mutate(deleteItem.id);
     }
   };
 
@@ -115,7 +115,7 @@ const Accounts = () => {
       <section className="mb-10">
         <div className="mb-6 flex justify-between items-center">
           <h3 className="text-xl font-semibold text-gray-800">
-            My Trading Accounts
+            Trading Accounts
           </h3>
           <Button onClick={() => setIsAccountModalOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />

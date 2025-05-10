@@ -128,8 +128,8 @@ const Scripts = () => {
 
   return (
     <>
-      <section className="mb-10">
-        <div className="mb-6 flex justify-between items-center">
+      <section className="mb-10 w-full">
+        <div className="mb-6 h-10 flex justify-between items-center">
           <h3 className="text-xl font-semibold text-gray-800">My Scripts</h3>
           <Button onClick={() => setIsScriptModalOpen(true)}>
             <Upload className="mr-2 h-4 w-4" />
@@ -143,16 +143,16 @@ const Scripts = () => {
               <table className="w-full">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-8 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Script Name
                     </th>
-                    <th className="px-8 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-8 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Last Run
                     </th>
-                    <th className="px-8 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -162,7 +162,7 @@ const Scripts = () => {
                     <tr>
                       <td
                         colSpan={4}
-                        className="px-8 py-4 text-center text-sm text-gray-500"
+                        className="px-6 py-4 text-center text-sm text-gray-500"
                       >
                         Loading scripts...
                       </td>
@@ -171,7 +171,7 @@ const Scripts = () => {
                     <tr>
                       <td
                         colSpan={4}
-                        className="px-8 py-4 text-center text-sm text-gray-500"
+                        className="px-6 py-4 text-center text-sm text-gray-500"
                       >
                         No scripts found. Upload a script to get started.
                       </td>
@@ -179,10 +179,10 @@ const Scripts = () => {
                   ) : (
                     scripts.map((script) => (
                       <tr key={script._id}>
-                        <td className="px-8 py-4 whitespace-nowrap text-sm text-center font-medium text-gray-900">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-center font-medium text-gray-900">
                           {script.name}
                         </td>
-                        <td className="px-8 py-4 whitespace-nowrap text-center">
+                        <td className="px-6 py-4 whitespace-nowrap text-center">
                           <span
                             className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-${script.status.toLowerCase()}`}
                           >
@@ -190,10 +190,10 @@ const Scripts = () => {
                               script.status.slice(1)}
                           </span>
                         </td>
-                        <td className="px-8 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                           {formatLastRun(script.lastRun)}
                         </td>
-                        <td className="px-8 py-4 whitespace-nowrap text-center text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
                           <div className="flex space-x-2 justify-center">
                             <Button
                               size="icon"
