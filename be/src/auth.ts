@@ -3,7 +3,11 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
-import { insertUserSchema, loginSchema, changePasswordSchema } from "@shared/schema";
+import {
+  insertUserSchema,
+  loginSchema,
+  changePasswordSchema,
+} from "@shared/schema";
 import { Document } from "mongoose";
 import { configDotenv } from "dotenv";
 
@@ -167,16 +171,20 @@ export function setupAuth(app: Express) {
     }
 
     try {
-      const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
-      
+      const { currentPassword, newPassword } = changePasswordSchema.parse(
+        req.body,
+      );
+
       // Verify current password
       const isPasswordValid = await storage.comparePasswords(
         currentPassword,
-        req.user.password
+        req.user.password,
       );
 
       if (!isPasswordValid) {
-        return res.status(400).json({ message: "Current password is incorrect" });
+        return res
+          .status(400)
+          .json({ message: "Current password is incorrect" });
       }
 
       // Hash new password
