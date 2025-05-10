@@ -24,44 +24,26 @@ const Actions = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 <tr>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     1
                   </td>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     Run
                   </td>
                 </tr>
                 <tr>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     2
                   </td>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     Pause
                   </td>
                 </tr>
                 <tr>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     3
                   </td>
-                  <td
-                    colSpan={1}
-                    className="px-6 py-4 text-center text-sm"
-                  >
+                  <td colSpan={1} className="px-6 py-4 text-center text-sm">
                     Stop
                   </td>
                 </tr>
