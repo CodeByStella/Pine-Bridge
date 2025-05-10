@@ -23,7 +23,6 @@ export default tseslint
         ...reactHooks.configs.recommended.rules,
         "@typescript-eslint/no-explicit-any": "off",
         "no-useless-catch": "off",
-        "@typescript-eslint/no-unused-vars": "warn",
         "react-refresh/only-export-components": "off",
       },
     },

@@ -4,7 +4,12 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User, InsertUser, loginSchema, insertUserSchema, changePasswordSchema } from "@shared/schema";
+import {
+  User,
+  InsertUser,
+  loginSchema,
+  changePasswordSchema,
+} from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -16,7 +21,11 @@ type AuthContextType = {
   loginMutation: UseMutationResult<User, Error, z.infer<typeof loginSchema>>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, InsertUser>;
-  changePasswordMutation: UseMutationResult<void, Error, z.infer<typeof changePasswordSchema>>;
+  changePasswordMutation: UseMutationResult<
+    void,
+    Error,
+    z.infer<typeof changePasswordSchema>
+  >;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -136,11 +145,5 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     changePasswordMutation,
   };
 
-  return (
-    <AuthContext.Provider
-      value={value}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
