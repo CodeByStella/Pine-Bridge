@@ -22,6 +22,7 @@ export interface IStorage {
   createUser(userData: InsertUser): Promise<User>;
   deleteUser(id: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
+  updateUserPassword(id: string, hashedPassword: string): Promise<void>;
   // Script methods
   getScripts(userId: string): Promise<Script[]>;
   getScript(id: string): Promise<Script | null>;
@@ -162,6 +163,10 @@ export class DatabaseStorage implements IStorage {
     const hashedBuf = Buffer.from(hashed, "hex");
     const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
     return timingSafeEqual(hashedBuf, suppliedBuf);
+  }
+
+  async updateUserPassword(id: string, hashedPassword: string): Promise<void> {
+    await User.findByIdAndUpdate(id, { password: hashedPassword });
   }
 }
 

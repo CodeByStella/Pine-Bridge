@@ -144,19 +144,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     requireAuth,
     async (req, res, next) => {
       try {
-        const accountId = parseInt(req.params.id);
+        const accountId = req.params.id;
 
         // Check if account exists and belongs to user
-        const account = await storage.getTradingAccount(accountId.toString());
+        const account = await storage.getTradingAccount(accountId);
         if (!account) {
           return res.status(404).json({ message: "Trading account not found" });
         }
 
-        if (account.userId !== req.user?.id && req.user?.role !== "admin") {
+        if (
+          account.userId.toString() !== req.user?.id &&
+          req.user?.role !== "admin"
+        ) {
           return res.status(403).json({ message: "Access denied" });
         }
 
-        await storage.deleteTradingAccount(accountId.toString());
+        await storage.deleteTradingAccount(accountId);
         res.status(204).end();
       } catch (error) {
         next(error);

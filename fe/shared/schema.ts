@@ -96,6 +96,11 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(6, "Current password must be at least 6 characters"),
+  newPassword: z.string().min(6, "New password must be at least 6 characters"),
+});
+
 // TypeScript types
 export type User = mongoose.InferSchemaType<typeof userSchema> & {
   _id: string;

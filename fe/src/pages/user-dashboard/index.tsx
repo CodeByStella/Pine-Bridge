@@ -4,9 +4,8 @@ import { Sidebar } from "@/components/sidebar";
 import { useLocation } from "wouter";
 
 import Header from "./header";
-import Scripts from "./scripts";
-import Actions from "./actions";
 import Accounts from "./accounts";
+import Dashboard from "./dashboard";
 
 export default function UserDashboard() {
   const { logoutMutation } = useAuth();
@@ -42,9 +41,8 @@ export default function UserDashboard() {
         activeItem={activeSection}
         onItemClick={setActiveSection}
         items={[
-          { id: "scripts", icon: "code", label: "My Scripts" },
-          { id: "actions", icon: "bolt", label: "Actions" },
-          { id: "accounts", icon: "user-circle", label: "My Trading Accounts" },
+          { id: "dashboard", icon: "code", label: "Dashboard" },
+          { id: "accounts", icon: "user-circle", label: "Trading Accounts" },
         ]}
         title="Pine-Bridge"
       />
@@ -52,8 +50,7 @@ export default function UserDashboard() {
       <main className="flex-1 overflow-y-auto bg-gray-50">
         <Header />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {activeSection === "scripts" && <Scripts />}
-          {activeSection === "actions" && <Actions />}
+          {activeSection === "dashboard" && <Dashboard />}
           {activeSection === "accounts" && <Accounts />}
         </div>
       </main>

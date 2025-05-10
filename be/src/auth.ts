@@ -3,7 +3,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
-import { insertUserSchema, loginSchema } from "@shared/schema";
+import { insertUserSchema, loginSchema, changePasswordSchema } from "@shared/schema";
 import { Document } from "mongoose";
 import { configDotenv } from "dotenv";
 
@@ -158,5 +158,36 @@ export function setupAuth(app: Express) {
     // Don't send the password back to the client
     const userWithoutPassword = { ...req.user.toObject(), password: undefined };
     res.status(200).json(userWithoutPassword);
+  });
+
+  // Change password endpoint
+  app.post("/api/change-password", async (req, res, next) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const { currentPassword, newPassword } = changePasswordSchema.parse(req.body);
+      
+      // Verify current password
+      const isPasswordValid = await storage.comparePasswords(
+        currentPassword,
+        req.user.password
+      );
+
+      if (!isPasswordValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+
+      // Hash new password
+      const hashedPassword = await storage.hashPassword(newPassword);
+
+      // Update user's password
+      await storage.updateUserPassword(req.user._id, hashedPassword);
+
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      next(error);
+    }
   });
 }
